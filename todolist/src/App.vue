@@ -15,20 +15,18 @@
   </p>
   <ul>
     <li
+      v-for="item in sortTasks()"
       :style="{ textDecoration: item.completed ? 'line-through' : 'none' }"
-      v-for="item in todolist"
       v-show="!maskCompletedTasks || !item.completed"
-      :key="item.title"
+      :key="item.date"
     >
-      {{ item.title }}
-      {{ item.date }}
       <input
         type="checkbox"
-        name=""
-        id=""
         v-model="item.completed"
         @change="setComplited(item)"
       />
+      {{ item.title }}
+      {{ item.date }}
     </li>
   </ul>
   <input
@@ -47,28 +45,27 @@ const task = ref();
 const allTasksCompleted = ref(false);
 const maskCompletedTasks = ref(false);
 
-
 const todolist = ref([
   {
     title: "Acheter la propriété 'Rue de la Paix'",
     completed: false,
-    date: new Date().toISOString().split('T')[0],
+    date: 1,
   },
   {
     title: "Construire un hôtel sur 'Avenue Foch'",
     completed: true,
-    date: new Date().toISOString().split('T')[0],
+    date: 2,
   },
   {
     title: 'Éviter la case prison',
     completed: false,
-    date: new Date().toISOString().split('T')[0],
+    date: 3,
   },
 ]);
 
-const sortTaks = () => {
-  todolist.value.sort((a, b) =>
-    a.completed === b.completed ? 0 : a.completed ? 1 : -1
+const sortTasks = () => {
+  return todolist.value.toSorted((a, b) =>
+    a.completed > b.completed ? 1 : -1
   );
 };
 
@@ -76,18 +73,15 @@ const addTask = () => {
   todolist.value.push({
     title: task.value,
     completed: false,
-    date: new Date().toISOString().split('T')[0],
+    date: new Date(),
   });
   checkAllTasksCompleted();
-  sortTaks();
   task.value = '';
 };
 
 const setComplited = () => {
   checkAllTasksCompleted();
-  sortTaks();
-}
-sortTaks();
+};
 
 
 const checkAllTasksCompleted = () => {
