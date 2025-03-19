@@ -1,85 +1,93 @@
 <template>
-  <h1>To do list</h1>
-  <hr />
-  <form action="" @submit.prevent="addTask">
-    <input
-      type="text"
-      placeholder="Ajouter une tâche"
-      v-model="task"
-      required
-    />
-    <button>Ajouter</button>
-  </form>
-  <p v-if="allTasksCompleted">
-    On dirait bien que toutes les tâches sont complétées !
-  </p>
-  <ul>
-    <li
-      v-for="item in sortTasks"
-      :style="{ textDecoration: item.completed ? 'line-through' : 'none' }"
-      v-show="!maskCompletedTasks || !item.completed"
-      :key="item.date"
+  <div class="flex items-center justify-center min-h-screen bg-gray-100">
+    <div
+      v-if="!quizFinished"
+      class="flex flex-col gap-y-16 items-start justify-center"
     >
-      <input
-        type="checkbox"
-        v-model="item.completed"
-        @change="setComplited(item)"
+      <h1 class="text-3xl text-red-500 font-bold">{{ title }}</h1>
+
+      <Progress :currentStep="step" :totalSteps="questions.length" />
+      <Question
+        :question="currentQuestion"
+        :key="step"
+        :qIndex="step"
+        @submitAnswer="(answer) => goToNextQuestion(answer)"
       />
-      {{ item.title }}
-      {{ item.date }}
-    </li>
-  </ul>
-  <input type="checkbox" name="" id="" v-model="maskCompletedTasks" />
-  Masquer les tâches complétées
+    </div>
+
+    <ResultsPanel
+      v-else
+      :score="score"
+      :scoreMax="questions.length"
+      :message="minimum_score <= score ? success_message : failure_message"
+    />
+  </div>
 </template>
 
 <script setup>
-import { computed, ref } from 'vue';
+import { onMounted, ref } from 'vue';
+import Progress from './components/Progress.vue';
+import Question from './components/Question.vue';
+import ResultsPanel from './components/ResultsPanel.vue';
 
-const task = ref();
-const allTasksCompleted = ref(false);
-const maskCompletedTasks = ref(false);
 
-const todolist = ref([
-  {
-    title: "Acheter la propriété 'Rue de la Paix'",
-    completed: false,
-    date: 1,
-  },
-  {
-    title: "Construire un hôtel sur 'Avenue Foch'",
-    completed: true,
-    date: 2,
-  },
-  {
-    title: 'Éviter la case prison',
-    completed: false,
-    date: 3,
-  },
-]);
+const failure_message = ref('');
+const success_message = ref('');
+const questions = ref([]);
+const minimum_score = ref(0);
+const title = ref('');
 
-const sortTasks = computed(() => {
-  return todolist.value.toSorted((a, b) =>
-    a.completed > b.completed ? 1 : -1
-  );
-});
+const currentQuestion = ref({});
+const step = ref(0);
+const score = ref(0);
+const quizFinished = ref(false);
 
-const addTask = () => {
-  todolist.value.push({
-    title: task.value,
-    completed: false,
-    date: new Date(),
+const goToNextQuestion = (answer) => {
+  if (answer === currentQuestion.value.correct_answer) {
+    incrementScore();
+  }
+  incrementStep();
+};
+
+const incrementStep = () => {
+  if (step.value === questions.value.length - 1) {
+    quizFinished.value = true;
+  } else {
+    step.value += 1;
+    currentQuestion.value = questions.value[step.value];
+  }
+};
+
+const incrementScore = () => {
+  score.value += 1;
+};
+
+const shuffleChoices = (array) => {
+  array.map((item) => {
+    console.log(item.choices);
+    item.choices.map((choice, index) => {
+      const j = Math.floor(Math.random() * (index + 1));
+      [item.choices[index], item.choices[j]] = [
+        item.choices[j],
+        item.choices[index],
+      ];
+    });
   });
-  checkAllTasksCompleted();
-  task.value = '';
 };
 
-const setComplited = () => {
-  checkAllTasksCompleted();
-};
-
-
-const checkAllTasksCompleted = () => {
-  allTasksCompleted.value = todolist.value.every((item) => item.completed);
-};
+onMounted(() => {
+  fetch('/quiz.json')
+    .then((response) => response.json())
+    .then((data) => {
+      failure_message.value = data.failure_message;
+      success_message.value = data.success_message;
+      questions.value = data.questions;
+      minimum_score.value = data.minimum_score;
+      title.value = data.title;
+      currentQuestion.value = questions.value[0];
+    })
+    .then(() => {
+      shuffleChoices(questions.value);
+    });
+});
 </script>

@@ -1,0 +1,43 @@
+{
+  "title": "Questionnaire sur les Films et Séries",
+  "minimum_score": 4,
+  "success_message": "Félicitations! Vous êtes un véritable cinéphile!",
+  "failure_message": "Dommage! Vous devriez regarder plus de films et séries.",
+  "questions": [
+    {
+      "question": "Dans quelle ville se déroule l'histoire de Cyberpunk 2077 ?",
+      "choices": ["Night City", "Los Santos", "Rapture", "Midgar"],
+      "correct_answer": "Night City"
+    },
+    {
+      "question": "Quel est le nom de l'implant cybernétique qui menace la vie de V ?",
+      "choices": ["Relic", "Sandevistan", "Cyberdeck", "Neural Link"],
+      "correct_answer": "Relic"
+    },
+    {
+      "question": "Quel acteur prête sa voix et son apparence au personnage de Johnny Silverhand ?",
+      "choices": [
+        "Keanu Reeves",
+        "Ryan Gosling",
+        "Hideo Kojima",
+        "Norman Reedus"
+      ],
+      "correct_answer": "Keanu Reeves"
+    },
+    {
+      "question": "Quel gang est connu pour ses modifications cybernétiques extrêmes et son obsession pour la technologie ?",
+      "choices": ["Maelstrom", "Tyger Claws", "The Mox", "Scavs"],
+      "correct_answer": "Maelstrom"
+    },
+    {
+      "question": "Quel personnage est à la tête de la société Arasaka ?",
+      "choices": [
+        "Saburo Arasaka",
+        "Adam Smasher",
+        "Dexter DeShawn",
+        "Goro Takemura"
+      ],
+      "correct_answer": "Saburo Arasaka"
+    }
+  ]
+}
